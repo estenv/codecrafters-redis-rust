@@ -105,6 +105,7 @@ pub enum Command {
         radius: f64,
         unit: String,
     },
+    Acl(String, Vec<String>),
 }
 
 impl From<Data> for Command {
@@ -275,6 +276,7 @@ impl From<&[Data]> for Command {
                 radius: radius.parse::<f64>().unwrap_or_default(),
                 unit: unit.into(),
             },
+            ("ACL", [Data::BStr(cmd), ..]) => Self::Acl(cmd.into(), parse_string_args(&val[2..])),
             _ => Command::Invalid,
         }
     }

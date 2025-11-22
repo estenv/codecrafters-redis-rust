@@ -155,6 +155,10 @@ impl ServerContext {
                 radius,
                 unit,
             } => array_response(self.store.geosearch(key, point, radius, unit).await),
+
+            Command::Acl(command, args) => {
+                bstring_response(crate::auth::acl(command, args).as_str())
+            }
             _ => null_response(),
         }
     }
