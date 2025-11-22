@@ -3,6 +3,7 @@ use super::{
     stream_reader::StreamReader,
 };
 use crate::{
+    auth,
     command::{
         core::Command,
         handlers::{self},
@@ -156,9 +157,8 @@ impl ServerContext {
                 unit,
             } => array_response(self.store.geosearch(key, point, radius, unit).await),
 
-            Command::Acl(command, args) => {
-                bstring_response(crate::auth::acl(command, args).as_str())
-            }
+            Command::AclWhoami => bstring_response(auth::whoami().as_str()),
+            Command::AclGetuser(user) => array_of_arrays_response(auth::getuser(user)),
             _ => null_response(),
         }
     }

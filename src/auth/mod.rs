@@ -1,3 +1,7 @@
-pub fn acl(command: String, args: Vec<String>) -> String {
-    return "default".into();
+pub fn whoami() -> String {
+    "default".into()
+}
+
+pub fn getuser(user: String) -> Vec<Vec<String>> {
+    vec![]
 }

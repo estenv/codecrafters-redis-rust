@@ -105,7 +105,8 @@ pub enum Command {
         radius: f64,
         unit: String,
     },
-    Acl(String, Vec<String>),
+    AclWhoami,
+    AclGetuser(String),
 }
 
 impl From<Data> for Command {
@@ -276,7 +277,7 @@ impl From<&[Data]> for Command {
                 radius: radius.parse::<f64>().unwrap_or_default(),
                 unit: unit.into(),
             },
-            ("ACL", [Data::BStr(cmd), ..]) => Self::Acl(cmd.into(), parse_string_args(&val[2..])),
+            ("ACL", ..) => parse_acl(&val[1..]),
             _ => Command::Invalid,
         }
     }
@@ -294,6 +295,17 @@ impl Command {
 fn is_number(val: &str) -> bool {
     val.chars()
         .all(|c| c.is_ascii_digit() || c == '.' || c == '-')
+}
+
+fn parse_acl(val: &[Data]) -> Command {
+    let Some(Data::BStr(command)) = val.first() else {
+        return Command::Invalid;
+    };
+    match (command.as_str(), &val[1..]) {
+        ("WHOAMI", _) => Command::AclWhoami,
+        ("GETUSER", [Data::BStr(arg)]) => Command::AclGetuser(arg.into()),
+        _ => Command::Invalid,
+    }
 }
 
 fn parse_xread(val: &[Data]) -> Command {
